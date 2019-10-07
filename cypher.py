@@ -142,7 +142,7 @@ def encrypt(p, k, iterations=1, ch=CHUNK_DIV, b=BASE_SIZE):
         shuffled_loc = shuffle_using_key(shuffled_loc[:], k)   # shuffle the shuffle list
         for c in range(len(chunks)):    # for each chunk
             my_loc = shuffled_loc[c]    # find actual location using the shuffle list
-            if c != (k + i) % len(chunks):  # if not weak link
+            if c != (i+k+4*(k + i)**3) % len(chunks):  # if not weak link
                 nxt = shuffled_loc[(c + 1) % len(chunks)]  # find actual location of the referring chunk
                 val = k * (chunks[my_loc] ^ chunks[nxt])  # calculate the next value of this chunk
             else:   # if is weak link
@@ -169,7 +169,7 @@ def decrypt(enc, k, its=1, ch=CHUNK_DIV, b=BASE_SIZE):
         #   print(shuffles[i])
         chuks = [-1] * len(result)  # blank list of empty chunks
 
-        start_c = (k + i) % len(chuks)
+        start_c = (i+k+4*(k + i)**3) % len(chuks)
         chuks[shuffled_loc[start_c]] = ((result[shuffled_loc[start_c]] ^ k) - ((k + 1) * i)) // k  # solve the weak link
 
         c = (start_c - 1) % len(chuks)  # go back
@@ -203,3 +203,6 @@ encr = get_string_from_file(OUTPUT_FILE)    # open encrypted file and read it
 D = decrypt(encr, my_key, iterations) # decrypt the encrypted data
 print("FINISHED DECRYPTING")
 print(D)
+
+
+# github update test
